@@ -1,36 +1,44 @@
 import pygame
 import math
 
+from objects.bullshit import Bullet
+
 
 class Player:
     image="☠️"
     position = {'x':None, 'y':None}
     rotation = math.pi/2
 
-    velocity = 10
+    max_hp = 100
+    hp = 100
+
+    velocity = 250
     rotation_velocity = math.pi
 
     def __init__(self):
         self.position['x'] = 400
         self.position['y'] = 400
 
-    def handle_keys(self, dt): 
+    def handle_keys(self, scene, dt): 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             self.rotation -= self.rotation_velocity * dt
         if keys[pygame.K_RIGHT]:
             self.rotation += self.rotation_velocity * dt
         if keys[pygame.K_UP]:
-            self.position['x'] += self.velocity * math.cos(self.rotation)
-            self.position['y'] += self.velocity * math.sin(self.rotation)
+            self.position['x'] += self.velocity * math.cos(self.rotation) * dt
+            self.position['y'] += self.velocity * math.sin(self.rotation) * dt
         if keys[pygame.K_DOWN]:
-            self.position['x'] -= self.velocity * math.cos(self.rotation) * 0.2
-            self.position['y'] -= self.velocity * math.sin(self.rotation) * 0.2
+            self.position['x'] -= self.velocity * math.cos(self.rotation) * 0.2 * dt
+            self.position['y'] -= self.velocity * math.sin(self.rotation) * 0.2 * dt
+        
+        if keys[pygame.K_SPACE]:
+            scene.bullets.append(Bullet(self.position.copy(),self.rotation))
+        
+        if keys[pygame.K_0]:
+            self.hp -= 12
 
     def draw(self, screen):
-
-        # pygame.draw.circle(screen, "red", (self.position['x'], self.position['y']), radius=10)
-        # pygame.draw.rect(screen, "green", (10,10))
         end_pos = (
             self.position['x'] + 20*math.cos(self.rotation),
             self.position['y'] + 20*math.sin(self.rotation),
